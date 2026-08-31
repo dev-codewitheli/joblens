@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: joblens
+  # Default to the zero-setup "demo" profile: a deterministic, offline analyzer
+  # and in-memory storage, so `./gradlew bootRun` works with no API key or DB.
+  # Switch to real AI with:  --spring.profiles.active=ai  (and set OPENAI_API_KEY)
+  profiles:
+    default: demo
+  ai:
+    openai:
+      # Placeholder so autoconfiguration loads in demo mode (never called there).
+      # In 'ai' mode, provide a real key via the OPENAI_API_KEY environment variable.
+      api-key: ${OPENAI_API_KEY:demo-unused}
+      # Point base-url at a local Ollama (http://localhost:11434) or another
+      # OpenAI-compatible endpoint to swap providers without code changes.
+      base-url: ${JOBLENS_AI_BASE_URL:https://api.openai.com}
+      chat:
+        options:
+          model: ${JOBLENS_AI_MODEL:gpt-4o-mini}
+          temperature: 0.3
+
+server:
+  port: 8080

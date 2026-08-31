@@ -1,0 +1,30 @@
+# Run the app:                docker compose up --build
+# Then open:                  http://localhost:8080
+#
+# Run against a local LLM:    docker compose --profile ai up --build
+#   (starts Ollama; then set the app to ai mode — see the environment block below)
+
+services:
+  joblens:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      # To use the local Ollama service instead of the offline analyzer, switch to:
+      #   SPRING_PROFILES_ACTIVE: ai
+      #   OPENAI_API_KEY: ollama
+      #   JOBLENS_AI_BASE_URL: http://ollama:11434
+      #   JOBLENS_AI_MODEL: llama3.1
+
+  # Optional local, free LLM for `ai` mode. Enabled only with `--profile ai`.
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ai"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+
+volumes:
+  ollama:
