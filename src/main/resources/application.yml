@@ -20,4 +20,6 @@ spring:
           temperature: 0.3
 
 server:
-  port: 8080
+  # Bind the platform-provided port in the cloud (Render/Railway set $PORT),
+  # falling back to 8080 for local runs.
+  port: ${PORT:8080}

@@ -1,0 +1,18 @@
+# Render Blueprint — deploy JobLens as a free Docker web service.
+# In Render: New → Blueprint → connect this repo. It reads this file.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: joblens
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/profile
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: demo
+      # To enable real AI instead of the offline analyzer, set these in the
+      # Render dashboard (do NOT commit a key):
+      #   SPRING_PROFILES_ACTIVE = ai
+      #   OPENAI_API_KEY         = <your key>   (mark as secret)
+      #   JOBLENS_AI_MODEL       = gpt-4o-mini
