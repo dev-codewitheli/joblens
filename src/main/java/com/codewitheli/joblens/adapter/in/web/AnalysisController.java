@@ -22,6 +22,7 @@ public class AnalysisController {
 
     @PostMapping
     public JobAnalysis analyze(@Valid @RequestBody AnalyzeRequest request) {
-        return analyzeJob.analyze(request.jobDescription());
+        var profile = request.profile() == null ? null : request.profile().toDomain();
+        return analyzeJob.analyze(request.jobDescription(), profile);
     }
 }

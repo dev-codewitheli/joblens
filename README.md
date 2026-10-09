@@ -17,9 +17,12 @@ swaps to a real LLM by flipping one profile.
 - **Spring AI** analysis: requirement extraction, fit reasoning, and generation of
   resume bullets + a cover-letter draft — mapped to a typed result via Spring AI's
   structured output.
-- **Privacy by design**: the profile has no fields for name/email/employer. Even
-  generated text uses `[Your Name]` / `[Company]` placeholders. Nothing personal is
-  stored, so the public demo is safe.
+- **Bring your own skills**: any visitor can edit the profile (headline, years,
+  skills) so the analysis applies to *them*, not a fixed sample. The profile lives
+  only in the browser (`localStorage`) and travels with each request.
+- **Privacy by design**: the profile has no fields for name/email/employer, and no
+  one's profile is stored server-side. Even generated text uses `[Your Name]` /
+  `[Company]` placeholders, so the public demo is safe.
 - **Zero-setup demo mode**: a deterministic, offline analyzer (with
   transferable-skill detection, e.g. RabbitMQ ↔ Kafka) means the demo works with no
   API key, no network, no database.
@@ -89,17 +92,26 @@ export JOBLENS_AI_MODEL=llama3.1
 
 | Method & path | Purpose |
 |---|---|
-| `POST /api/analyze` | Analyze a JD (body: `{ "jobDescription": "..." }`) |
-| `POST /api/applications` | Analyze and save to the board |
+| `POST /api/analyze` | Analyze a JD against an optional visitor profile |
+| `POST /api/applications` | Analyze (with optional profile) and save to the board |
 | `GET /api/applications` | List tracked applications |
 | `PATCH /api/applications/{id}/status` | Move a card (`{ "status": "APPLIED" }`) |
 | `DELETE /api/applications/{id}` | Remove a card |
-| `GET /api/profile` · `PUT /api/profile` | Read / update the skills-only profile |
+| `GET /api/profile` | Read the read-only **sample** profile (used to pre-fill the UI) |
+
+The request body carries an **optional `profile`**. When present, the analysis uses
+it; when omitted, the server falls back to its sample profile. Profiles are never
+stored server-side — the web UI keeps the visitor's profile in `localStorage` and
+sends it per request.
 
 ```bash
 curl -s -X POST http://localhost:8080/api/analyze \
   -H "Content-Type: application/json" \
-  -d '{"jobDescription":"Senior Backend Engineer. Requirements: Java, Spring Boot, Kafka, Kubernetes."}'
+  -d '{
+        "jobDescription": "Frontend Engineer. Requirements: React, TypeScript, REST APIs.",
+        "profile": { "headline": "Frontend Engineer", "yearsOfExperience": 3,
+                     "skills": ["React", "TypeScript", "REST APIs"] }
+      }'
 ```
 
 ## Tech

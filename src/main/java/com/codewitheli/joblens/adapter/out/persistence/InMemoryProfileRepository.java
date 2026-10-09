@@ -5,38 +5,21 @@ import com.codewitheli.joblens.domain.model.SkillProfile;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * In-memory profile store seeded with a fictional demo profile.
+ * Supplies a fixed, fictional sample profile used to pre-fill the UI.
  *
- * <p>MVP persistence: data resets on restart. A PostgreSQL/JPA adapter is the
- * next milestone (see the roadmap in the README).
+ * <p>Visitor profiles are never stored here — they are sent with each request —
+ * so this repository is read-only.
  */
 @Repository
 public class InMemoryProfileRepository implements ProfileRepository {
 
-    private final AtomicReference<SkillProfile> active = new AtomicReference<>(demoProfile());
+    private final SkillProfile sample = demoProfile();
 
     @Override
     public SkillProfile getActive() {
-        return active.get();
-    }
-
-    @Override
-    public SkillProfile save(SkillProfile profile) {
-        // Preserve the stable id; only the content changes.
-        SkillProfile current = active.get();
-        SkillProfile updated = new SkillProfile(
-                current.id(),
-                profile.headline(),
-                profile.yearsOfExperience(),
-                profile.skills(),
-                profile.experienceSummary(),
-                profile.projectHighlights()
-        );
-        active.set(updated);
-        return updated;
+        return sample;
     }
 
     /** A fictional, PII-free profile so the demo works out of the box. */

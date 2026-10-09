@@ -34,7 +34,7 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center;
       color: #fff; font-family: var(--display); font-weight: 700; font-size: .95rem; box-shadow: var(--shadow); }
     h1 { font-family: var(--display); color: var(--heading); font-size: clamp(1.7rem,4.5vw,2.4rem); font-weight: 700; letter-spacing: -.02em; }
-    .tagline { color: var(--dim); font-size: 1rem; margin-top: .6rem; max-width: 560px; margin-inline: auto; }
+    .tagline { color: var(--dim); font-size: 1rem; margin-top: .6rem; max-width: 580px; margin-inline: auto; }
     .demo-note { display:inline-block; margin-top:1rem; font-family:var(--mono); font-size:.72rem;
       color: var(--accent); border:1px solid var(--border); border-radius:999px; padding:.35rem .8rem; background:var(--accent-soft); }
 
@@ -45,9 +45,12 @@
     .card h2 { font-family: var(--display); font-size: 1.05rem; color: var(--heading); margin-bottom: 1rem; font-weight: 600; }
 
     label { font-size: .82rem; color: var(--dim); display:block; margin-bottom:.4rem; font-weight: 500; }
-    textarea { width: 100%; min-height: 210px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
-      border-radius: 12px; padding: .85rem; font-family: var(--mono); font-size: .85rem; resize: vertical; }
-    textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    textarea, input[type="text"], input[type="number"] {
+      width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+      border-radius: 12px; padding: .7rem .8rem; font-family: var(--sans); font-size: .9rem; }
+    textarea#jd { min-height: 210px; font-family: var(--mono); font-size: .85rem; resize: vertical; }
+    textarea.summary { min-height: 70px; resize: vertical; }
+    textarea:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
     .row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .85rem; }
     button { font-family: var(--sans); font-weight: 600; font-size: .88rem; padding: .62rem 1.2rem; border-radius: 10px; cursor: pointer;
@@ -64,6 +67,27 @@
       border: 1px solid var(--border); color: var(--text); background: var(--surface-2); }
     .chip.match { color: var(--green); background: var(--green-soft); border-color: transparent; }
     .chip.gap { color: var(--amber); background: var(--amber-soft); border-color: transparent; }
+
+    /* Editable profile */
+    .profile-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .6rem; }
+    .profile-head h3 { margin: 0; }
+    .profile-note { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--dim); font-size: .72rem; }
+    .dimlabel { color: var(--dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .linkbtn { background: none; border: none; color: var(--accent); padding: .2rem .25rem; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+    .linkbtn:hover { text-decoration: underline; box-shadow: none; filter: none; }
+    .profile-fields { display: flex; gap: .7rem; }
+    .profile-fields .field { flex: 1; }
+    .profile-fields .field--sm { flex: 0 0 140px; }
+    .field { margin-bottom: .7rem; }
+    .skill-editor { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; cursor: text;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: .45rem; min-height: 46px; }
+    .skill-editor:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .skill-editor input { flex: 1; min-width: 130px; border: none; background: transparent; padding: .2rem; font-size: .85rem; }
+    .skill-editor input:focus { outline: none; box-shadow: none; }
+    .skill-chip { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--mono); font-size: .76rem;
+      padding: .28rem .5rem; border-radius: 8px; background: #fff; border: 1px solid var(--border); color: var(--text); }
+    .skill-chip button { background: none; border: none; color: var(--dim); padding: 0; font-size: .85rem; line-height: 1; }
+    .skill-chip button:hover { color: var(--red); box-shadow: none; filter: none; }
 
     .score-row { display: flex; align-items: baseline; gap: .5rem; }
     .score { font-family: var(--display); font-size: 3rem; color: var(--accent); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
@@ -103,12 +127,12 @@
         <span class="mark">JL</span>
         <h1>JobLens</h1>
       </div>
-      <p class="tagline">An AI job-application assistant — paste a job description, see your fit, and get tailored material.</p>
-      <div><span class="demo-note">demo mode · offline analyzer · no personal data stored</span></div>
+      <p class="tagline">An AI job-application assistant — add your skills, paste a job description, and see how you fit with tailored suggestions.</p>
+      <div><span class="demo-note">offline analyzer · your profile stays in your browser · nothing stored on the server</span></div>
     </header>
 
     <div class="grid">
-      <!-- Left: input + profile -->
+      <!-- Left: job input + editable profile -->
       <section class="card">
         <h2>Analyze a job posting</h2>
         <label for="jd">Paste the job description</label>
@@ -120,15 +144,40 @@
         </div>
 
         <div class="block">
-          <h3>Your profile (skills only — no PII)</h3>
-          <div class="chips" id="profileChips"><span class="empty">Loading…</span></div>
+          <div class="profile-head">
+            <h3>Your profile <span class="profile-note">— stays in your browser</span></h3>
+            <button id="resetProfileBtn" class="linkbtn" type="button">Reset to sample</button>
+          </div>
+
+          <div class="profile-fields">
+            <div class="field">
+              <label for="pfHeadline">Headline</label>
+              <input id="pfHeadline" type="text" placeholder="e.g. Senior Backend Engineer" />
+            </div>
+            <div class="field field--sm">
+              <label for="pfYears">Years of exp.</label>
+              <input id="pfYears" type="number" min="0" max="60" placeholder="0" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pfSkillInput">Skills <span class="dimlabel">(press Enter or comma to add)</span></label>
+            <div class="skill-editor" id="skillEditor">
+              <input id="pfSkillInput" type="text" placeholder="Add a skill…" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:0">
+            <label for="pfSummary">Experience summary <span class="dimlabel">(optional)</span></label>
+            <textarea id="pfSummary" class="summary" placeholder="A sentence or two about your focus…"></textarea>
+          </div>
         </div>
       </section>
 
       <!-- Right: results -->
       <section class="card">
         <h2>Fit analysis</h2>
-        <div id="result"><p class="empty">Run an analysis to see your match, gaps, and tailored suggestions.</p></div>
+        <div id="result"><p class="empty">Add your skills and run an analysis to see your match, gaps, and tailored suggestions.</p></div>
       </section>
     </div>
 
@@ -148,7 +197,11 @@
 
   <script>
     const STATUSES = ["SAVED", "APPLIED", "INTERVIEWING", "OFFER", "REJECTED"];
+    const PROFILE_KEY = "joblens_profile_v1";
     const $ = (s) => document.querySelector(s);
+
+    // Visitor's profile — kept only in this browser, sent with each request.
+    let profile = { headline: "", yearsOfExperience: 0, skills: [], experienceSummary: "" };
 
     const SAMPLE = `Senior Backend Engineer
 
@@ -163,23 +216,97 @@ Requirements:
 Nice to have: AWS, CI/CD, hexagonal architecture.`;
 
     async function api(path, opts) {
-      const res = await fetch(path, {
-        headers: { "Content-Type": "application/json" },
-        ...opts,
-      });
+      const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...opts });
       if (!res.ok && res.status !== 404) throw new Error("HTTP " + res.status);
       return res.status === 204 ? null : res.json();
     }
 
     function esc(s) { return (s || "").replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
 
-    async function loadProfile() {
-      try {
-        const p = await api("/api/profile");
-        $("#profileChips").innerHTML = p.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("");
-      } catch (e) { $("#profileChips").innerHTML = `<span class="empty">Could not load profile</span>`; }
+    /* ---- Profile state (localStorage-backed) ---- */
+    function saveProfileLocal() {
+      try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch (e) { /* ignore */ }
     }
 
+    function renderSkills() {
+      const editor = $("#skillEditor");
+      const input = $("#pfSkillInput");
+      [...editor.querySelectorAll(".skill-chip")].forEach(c => c.remove());
+      profile.skills.forEach((skill, i) => {
+        const chip = document.createElement("span");
+        chip.className = "skill-chip";
+        chip.innerHTML = `${esc(skill)} <button type="button" aria-label="Remove ${esc(skill)}">&times;</button>`;
+        chip.querySelector("button").onclick = () => { profile.skills.splice(i, 1); saveProfileLocal(); renderSkills(); };
+        editor.insertBefore(chip, input);
+      });
+    }
+
+    function fillProfileForm() {
+      $("#pfHeadline").value = profile.headline || "";
+      $("#pfYears").value = profile.yearsOfExperience || 0;
+      $("#pfSummary").value = profile.experienceSummary || "";
+      renderSkills();
+    }
+
+    function syncProfileFromForm() {
+      profile.headline = $("#pfHeadline").value.trim();
+      profile.yearsOfExperience = parseInt($("#pfYears").value, 10) || 0;
+      profile.experienceSummary = $("#pfSummary").value.trim();
+      saveProfileLocal();
+    }
+
+    function addSkill(raw) {
+      const v = (raw || "").replace(/,/g, "").trim();
+      if (!v) return;
+      if (!profile.skills.some(s => s.toLowerCase() === v.toLowerCase())) {
+        profile.skills.push(v);
+        saveProfileLocal();
+        renderSkills();
+      }
+    }
+
+    function profilePayload() {
+      syncProfileFromForm();
+      return {
+        headline: profile.headline,
+        yearsOfExperience: profile.yearsOfExperience,
+        skills: profile.skills,
+        experienceSummary: profile.experienceSummary,
+        projectHighlights: []
+      };
+    }
+
+    async function sampleProfile() {
+      const p = await api("/api/profile");
+      return {
+        headline: p.headline || "",
+        yearsOfExperience: p.yearsOfExperience || 0,
+        skills: Array.isArray(p.skills) ? p.skills.slice() : [],
+        experienceSummary: p.experienceSummary || ""
+      };
+    }
+
+    async function loadProfile() {
+      let stored = null;
+      try { stored = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null"); } catch (e) { /* ignore */ }
+      if (stored && Array.isArray(stored.skills)) {
+        profile = {
+          headline: stored.headline || "",
+          yearsOfExperience: stored.yearsOfExperience || 0,
+          skills: stored.skills,
+          experienceSummary: stored.experienceSummary || ""
+        };
+      } else {
+        try { profile = await sampleProfile(); } catch (e) { /* keep empty */ }
+      }
+      fillProfileForm();
+    }
+
+    async function resetProfile() {
+      try { profile = await sampleProfile(); saveProfileLocal(); fillProfileForm(); } catch (e) { /* ignore */ }
+    }
+
+    /* ---- Analysis + board rendering ---- */
     function renderAnalysis(a) {
       const chips = (arr, cls) => arr.length
         ? arr.map(x => `<span class="chip ${cls}">${esc(x)}</span>`).join("")
@@ -208,7 +335,7 @@ Nice to have: AWS, CI/CD, hexagonal architecture.`;
               <select onchange="moveApp('${a.id}', this.value)">
                 ${STATUSES.map(s => `<option value="${s}" ${s === st ? "selected" : ""}>${s}</option>`).join("")}
               </select>
-              <button class="del" title="Delete" onclick="deleteApp('${a.id}')">✕</button>
+              <button class="del" title="Delete" onclick="deleteApp('${a.id}')">&times;</button>
             </div>
           </div>`).join("") : `<span class="empty">—</span>`;
         return `<div class="col"><h4>${st}</h4>${cards}</div>`;
@@ -218,11 +345,24 @@ Nice to have: AWS, CI/CD, hexagonal architecture.`;
     window.moveApp = async (id, status) => { await api(`/api/applications/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }); renderBoard(); };
     window.deleteApp = async (id) => { await api(`/api/applications/${id}`, { method: "DELETE" }); renderBoard(); };
 
+    /* ---- Wiring ---- */
+    const skillInput = $("#pfSkillInput");
+    skillInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill(skillInput.value); skillInput.value = ""; }
+      else if (e.key === "Backspace" && skillInput.value === "" && profile.skills.length) {
+        profile.skills.pop(); saveProfileLocal(); renderSkills();
+      }
+    });
+    skillInput.addEventListener("blur", () => { if (skillInput.value.trim()) { addSkill(skillInput.value); skillInput.value = ""; } });
+    $("#skillEditor").addEventListener("click", () => skillInput.focus());
+    ["#pfHeadline", "#pfYears", "#pfSummary"].forEach(sel => $(sel).addEventListener("change", syncProfileFromForm));
+    $("#resetProfileBtn").onclick = resetProfile;
+
     $("#analyzeBtn").onclick = async () => {
       const jd = $("#jd").value.trim();
       if (!jd) return;
       $("#analyzeBtn").disabled = true;
-      try { renderAnalysis(await api("/api/analyze", { method: "POST", body: JSON.stringify({ jobDescription: jd }) })); }
+      try { renderAnalysis(await api("/api/analyze", { method: "POST", body: JSON.stringify({ jobDescription: jd, profile: profilePayload() }) })); }
       catch (e) { $("#result").innerHTML = `<p class="empty">Analysis failed: ${esc(e.message)}</p>`; }
       finally { $("#analyzeBtn").disabled = false; }
     };
@@ -230,7 +370,7 @@ Nice to have: AWS, CI/CD, hexagonal architecture.`;
     $("#saveBtn").onclick = async () => {
       const jd = $("#jd").value.trim();
       if (!jd) return;
-      const card = await api("/api/applications", { method: "POST", body: JSON.stringify({ jobDescription: jd }) });
+      const card = await api("/api/applications", { method: "POST", body: JSON.stringify({ jobDescription: jd, profile: profilePayload() }) });
       renderAnalysis(card.analysis);
       renderBoard();
     };

@@ -1,16 +1,17 @@
 package com.codewitheli.joblens.adapter.in.web;
 
-import com.codewitheli.joblens.adapter.in.web.dto.ProfileUpdateRequest;
 import com.codewitheli.joblens.application.port.in.ManageProfileUseCase;
 import com.codewitheli.joblens.domain.model.SkillProfile;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Read and update the skills-only profile (no personal data). */
+/**
+ * Serves the read-only <em>sample</em> skills-only profile used to pre-fill the
+ * UI. There is no update endpoint: each visitor's profile lives in their own
+ * browser and is sent with each analyze request, so the server stores no one's
+ * profile.
+ */
 @RestController
 @RequestMapping("/api/profile")
 public class ProfileController {
@@ -24,10 +25,5 @@ public class ProfileController {
     @GetMapping
     public SkillProfile get() {
         return manageProfile.getProfile();
-    }
-
-    @PutMapping
-    public SkillProfile update(@Valid @RequestBody ProfileUpdateRequest request) {
-        return manageProfile.updateProfile(request.toDomain());
     }
 }

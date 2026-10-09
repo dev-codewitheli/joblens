@@ -15,8 +15,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Orchestrates a job analysis: load the active profile, delegate to the analysis
- * port (keyword or AI), and optionally persist the result as a board card.
+ * Orchestrates a job analysis: resolve the profile (visitor-supplied or the
+ * sample), delegate to the analysis port (keyword or AI), and optionally persist
+ * the result as a board card.
  */
 @Service
 public class AnalyzeJobService implements AnalyzeJobUseCase {
@@ -35,16 +36,24 @@ public class AnalyzeJobService implements AnalyzeJobUseCase {
 
     @Override
     public JobAnalysis analyze(String jobDescription) {
-        SkillProfile profile = profiles.getActive();
+        return analyze(jobDescription, null);
+    }
+
+    @Override
+    public JobAnalysis analyze(String jobDescription, SkillProfile profile) {
         JobPosting posting = toPosting(jobDescription);
-        return analysisPort.analyze(profile, posting);
+        return analysisPort.analyze(resolve(profile), posting);
     }
 
     @Override
     public ApplicationCard analyzeAndSave(String jobDescription) {
-        SkillProfile profile = profiles.getActive();
+        return analyzeAndSave(jobDescription, null);
+    }
+
+    @Override
+    public ApplicationCard analyzeAndSave(String jobDescription, SkillProfile profile) {
         JobPosting posting = toPosting(jobDescription);
-        JobAnalysis analysis = analysisPort.analyze(profile, posting);
+        JobAnalysis analysis = analysisPort.analyze(resolve(profile), posting);
 
         ApplicationCard card = new ApplicationCard(
                 UUID.randomUUID().toString(),
@@ -55,6 +64,11 @@ public class AnalyzeJobService implements AnalyzeJobUseCase {
                 analysis
         );
         return applications.save(card);
+    }
+
+    /** Use the visitor's profile when supplied; otherwise fall back to the sample. */
+    private SkillProfile resolve(SkillProfile profile) {
+        return profile != null ? profile : profiles.getActive();
     }
 
     /** Builds a posting from raw text, deriving a best-effort title from the first line. */

@@ -36,7 +36,8 @@ public class ApplicationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApplicationCard create(@Valid @RequestBody AnalyzeRequest request) {
-        return analyzeJob.analyzeAndSave(request.jobDescription());
+        var profile = request.profile() == null ? null : request.profile().toDomain();
+        return analyzeJob.analyzeAndSave(request.jobDescription(), profile);
     }
 
     @GetMapping

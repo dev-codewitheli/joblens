@@ -6,7 +6,7 @@ import com.codewitheli.joblens.domain.model.SkillProfile;
 import org.springframework.stereotype.Service;
 
 /**
- * Reads and updates the skills-only profile.
+ * Provides the read-only sample profile.
  */
 @Service
 public class ProfileService implements ManageProfileUseCase {
@@ -20,10 +20,5 @@ public class ProfileService implements ManageProfileUseCase {
     @Override
     public SkillProfile getProfile() {
         return profiles.getActive();
-    }
-
-    @Override
-    public SkillProfile updateProfile(SkillProfile profile) {
-        return profiles.save(profile);
     }
 }
