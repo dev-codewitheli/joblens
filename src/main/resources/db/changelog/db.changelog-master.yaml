@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-application-card
+      author: joblens
+      changes:
+        - createTable:
+            tableName: application_card
+            columns:
+              - column:
+                  name: id
+                  type: varchar(64)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job_title
+                  type: varchar(512)
+              - column:
+                  name: company_placeholder
+                  type: varchar(256)
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: analysis
+                  type: text
+        - createIndex:
+            indexName: idx_application_card_client_id
+            tableName: application_card
+            columns:
+              - column:
+                  name: client_id

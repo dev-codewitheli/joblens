@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Manages the tracked applications on the Kanban board.
+ * Manages the tracked applications on a visitor's Kanban board (scoped by client id).
  */
 @Service
 public class ApplicationService implements TrackApplicationsUseCase {
@@ -23,20 +23,20 @@ public class ApplicationService implements TrackApplicationsUseCase {
     }
 
     @Override
-    public List<ApplicationCard> list() {
-        return applications.findAll().stream()
+    public List<ApplicationCard> list(String clientId) {
+        return applications.findAll(clientId).stream()
                 .sorted(Comparator.comparing(ApplicationCard::createdAt).reversed())
                 .toList();
     }
 
     @Override
-    public Optional<ApplicationCard> updateStatus(String id, ApplicationStatus status) {
-        return applications.findById(id)
-                .map(card -> applications.save(card.withStatus(status)));
+    public Optional<ApplicationCard> updateStatus(String clientId, String id, ApplicationStatus status) {
+        return applications.findById(clientId, id)
+                .map(card -> applications.save(clientId, card.withStatus(status)));
     }
 
     @Override
-    public boolean delete(String id) {
-        return applications.deleteById(id);
+    public boolean delete(String clientId, String id) {
+        return applications.deleteById(clientId, id);
     }
 }

@@ -1,5 +1,6 @@
 package com.codewitheli.joblens.adapter.out.ai;
 
+import com.codewitheli.joblens.application.skills.TechDictionary;
 import com.codewitheli.joblens.domain.model.JobAnalysis;
 import com.codewitheli.joblens.domain.model.JobPosting;
 import com.codewitheli.joblens.domain.model.SkillProfile;
@@ -11,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class KeywordJobAnalyzerTest {
 
-    private final KeywordJobAnalyzer analyzer = new KeywordJobAnalyzer();
+    private final KeywordJobAnalyzer analyzer = new KeywordJobAnalyzer(new TechDictionary());
 
     private SkillProfile profile(String... skills) {
         return new SkillProfile("demo", "Senior Backend Engineer", 7, List.of(skills),

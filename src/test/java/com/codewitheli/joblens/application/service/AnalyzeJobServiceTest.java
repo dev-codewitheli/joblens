@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AnalyzeJobServiceTest {
 
+    private static final String CLIENT = "client-1";
+
     private final ApplicationRepository applications = new InMemoryApplicationRepository();
 
     // A stub analysis port so the service test is independent of any analyzer.
@@ -34,25 +36,26 @@ class AnalyzeJobServiceTest {
         JobAnalysis analysis = service.analyze("Java role");
 
         assertThat(analysis.matchScore()).isEqualTo(80);
-        assertThat(applications.findAll()).isEmpty();
+        assertThat(applications.findAll(CLIENT)).isEmpty();
     }
 
     @Test
-    void analyzeAndSavePersistsCardAsSaved() {
-        ApplicationCard card = service.analyzeAndSave("""
+    void analyzeAndSavePersistsCardAsSavedForClient() {
+        ApplicationCard card = service.analyzeAndSave(CLIENT, """
                 Backend Engineer
                 Java and Spring Boot required.
-                """);
+                """, null);
 
         assertThat(card.status()).isEqualTo(ApplicationStatus.SAVED);
         assertThat(card.jobTitle()).isEqualTo("Backend Engineer");
         assertThat(card.analysis().matchScore()).isEqualTo(80);
-        assertThat(applications.findAll()).hasSize(1);
+        assertThat(applications.findAll(CLIENT)).hasSize(1);
+        // Scoped: another client sees nothing.
+        assertThat(applications.findAll("other-client")).isEmpty();
     }
 
     @Test
     void usesSuppliedProfileOverSample() {
-        // Capture which profile the analysis port actually receives.
         AtomicReference<SkillProfile> seen = new AtomicReference<>();
         JobAnalysisPort capturing = (profile, posting) -> {
             seen.set(profile);

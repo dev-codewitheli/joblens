@@ -17,7 +17,7 @@ import java.util.UUID;
 /**
  * Orchestrates a job analysis: resolve the profile (visitor-supplied or the
  * sample), delegate to the analysis port (keyword or AI), and optionally persist
- * the result as a board card.
+ * the result as a board card scoped to the visitor's client id.
  */
 @Service
 public class AnalyzeJobService implements AnalyzeJobUseCase {
@@ -46,12 +46,7 @@ public class AnalyzeJobService implements AnalyzeJobUseCase {
     }
 
     @Override
-    public ApplicationCard analyzeAndSave(String jobDescription) {
-        return analyzeAndSave(jobDescription, null);
-    }
-
-    @Override
-    public ApplicationCard analyzeAndSave(String jobDescription, SkillProfile profile) {
+    public ApplicationCard analyzeAndSave(String clientId, String jobDescription, SkillProfile profile) {
         JobPosting posting = toPosting(jobDescription);
         JobAnalysis analysis = analysisPort.analyze(resolve(profile), posting);
 
@@ -63,7 +58,7 @@ public class AnalyzeJobService implements AnalyzeJobUseCase {
                 Instant.now(),
                 analysis
         );
-        return applications.save(card);
+        return applications.save(clientId, card);
     }
 
     /** Use the visitor's profile when supplied; otherwise fall back to the sample. */

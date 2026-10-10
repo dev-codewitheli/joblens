@@ -2,6 +2,7 @@ package com.codewitheli.joblens.adapter.out.persistence;
 
 import com.codewitheli.joblens.application.port.out.ApplicationRepository;
 import com.codewitheli.joblens.domain.model.ApplicationCard;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,32 +11,37 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * In-memory board store. MVP persistence — resets on restart. Swapped for a
- * PostgreSQL/JPA adapter in the persistence milestone.
+ * In-memory board store, partitioned per client id. Default for demo/ai modes;
+ * the JPA adapter takes over under the {@code postgres} profile. Resets on restart.
  */
 @Repository
+@Profile("!postgres")
 public class InMemoryApplicationRepository implements ApplicationRepository {
 
-    private final ConcurrentMap<String, ApplicationCard> store = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ConcurrentMap<String, ApplicationCard>> store = new ConcurrentHashMap<>();
+
+    private ConcurrentMap<String, ApplicationCard> board(String clientId) {
+        return store.computeIfAbsent(clientId, k -> new ConcurrentHashMap<>());
+    }
 
     @Override
-    public ApplicationCard save(ApplicationCard card) {
-        store.put(card.id(), card);
+    public ApplicationCard save(String clientId, ApplicationCard card) {
+        board(clientId).put(card.id(), card);
         return card;
     }
 
     @Override
-    public List<ApplicationCard> findAll() {
-        return List.copyOf(store.values());
+    public List<ApplicationCard> findAll(String clientId) {
+        return List.copyOf(board(clientId).values());
     }
 
     @Override
-    public Optional<ApplicationCard> findById(String id) {
-        return Optional.ofNullable(store.get(id));
+    public Optional<ApplicationCard> findById(String clientId, String id) {
+        return Optional.ofNullable(board(clientId).get(id));
     }
 
     @Override
-    public boolean deleteById(String id) {
-        return store.remove(id) != null;
+    public boolean deleteById(String clientId, String id) {
+        return board(clientId).remove(id) != null;
     }
 }

@@ -1,0 +1,21 @@
+# Activated with: --spring.profiles.active=postgres
+# Enables Spring Data JPA + Liquibase against PostgreSQL. In-memory adapters are
+# disabled (they are @Profile("!postgres")) and the JPA adapters take over.
+spring:
+  # Clear the demo exclusions so DataSource/JPA/Liquibase auto-config runs.
+  autoconfigure:
+    exclude: []
+  datasource:
+    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/joblens}
+    username: ${JDBC_DATABASE_USERNAME:joblens}
+    password: ${JDBC_DATABASE_PASSWORD:joblens}
+  jpa:
+    hibernate:
+      ddl-auto: validate      # schema is owned by Liquibase, not Hibernate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml

@@ -8,8 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    /* JobLens has its own identity — a light, product/SaaS look with an indigo
-       accent and Space Grotesk / IBM Plex fonts — distinct from the portfolio. */
     :root {
       --bg: #f5f6fb; --bg-grad: radial-gradient(1200px 500px at 50% -10%, #eceafe 0%, #f5f6fb 60%);
       --surface: #ffffff; --surface-2: #f4f5fa; --border: #e6e8f0;
@@ -22,43 +20,68 @@
       --shadow: 0 1px 2px rgba(23,26,36,.04), 0 8px 24px rgba(23,26,36,.06);
       --radius: 16px;
     }
+    :root[data-theme="dark"] {
+      --bg: #0f1117; --bg-grad: radial-gradient(1200px 500px at 50% -10%, #1b1f33 0%, #0f1117 60%);
+      --surface: #171a22; --surface-2: #1e212b; --border: #2a2e3a;
+      --text: #c9cede; --dim: #8b92a6; --heading: #eef1f8;
+      --accent: #818cf8; --accent-2: #a78bfa; --accent-soft: #232842;
+      --green: #34d399; --green-soft: #10251d; --amber: #fbbf24; --amber-soft: #2a2211; --red: #f87171;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.4);
+    }
     * { box-sizing: border-box; margin: 0; }
     body { background: var(--bg); background-image: var(--bg-grad); color: var(--text); font-family: var(--sans);
-      line-height: 1.6; -webkit-font-smoothing: antialiased; }
+      line-height: 1.6; -webkit-font-smoothing: antialiased; transition: background-color .2s, color .2s; }
     a { color: var(--accent); }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
 
-    header { text-align: center; margin-bottom: 2.25rem; }
+    header { text-align: center; margin-bottom: 2rem; position: relative; }
     .brand { display: inline-flex; align-items: center; gap: .6rem; }
     .brand .mark { width: 34px; height: 34px; border-radius: 10px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center;
       color: #fff; font-family: var(--display); font-weight: 700; font-size: .95rem; box-shadow: var(--shadow); }
     h1 { font-family: var(--display); color: var(--heading); font-size: clamp(1.7rem,4.5vw,2.4rem); font-weight: 700; letter-spacing: -.02em; }
-    .tagline { color: var(--dim); font-size: 1rem; margin-top: .6rem; max-width: 580px; margin-inline: auto; }
+    .tagline { color: var(--dim); font-size: 1rem; margin-top: .6rem; max-width: 600px; margin-inline: auto; }
     .demo-note { display:inline-block; margin-top:1rem; font-family:var(--mono); font-size:.72rem;
       color: var(--accent); border:1px solid var(--border); border-radius:999px; padding:.35rem .8rem; background:var(--accent-soft); }
+    .theme-toggle { position: absolute; top: 0; right: 0; width: 40px; height: 40px; border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--text); cursor: pointer; font-size: 1.1rem; }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); box-shadow: none; filter: none; }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-    @media (max-width: 840px) { .grid { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 1.5rem; box-shadow: var(--shadow); }
     .card h2 { font-family: var(--display); font-size: 1.05rem; color: var(--heading); margin-bottom: 1rem; font-weight: 600; }
 
     label { font-size: .82rem; color: var(--dim); display:block; margin-bottom:.4rem; font-weight: 500; }
-    textarea, input[type="text"], input[type="number"] {
+    textarea, input[type="text"], input[type="url"], input[type="number"] {
       width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
       border-radius: 12px; padding: .7rem .8rem; font-family: var(--sans); font-size: .9rem; }
-    textarea#jd { min-height: 210px; font-family: var(--mono); font-size: .85rem; resize: vertical; }
-    textarea.summary { min-height: 70px; resize: vertical; }
+    textarea#jd { min-height: 190px; font-family: var(--mono); font-size: .85rem; resize: vertical; }
+    textarea.summary, textarea#resumeText { min-height: 70px; resize: vertical; }
     textarea:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .field-error { color: var(--red); font-size: .78rem; margin-top: .35rem; min-height: 1em; }
+    .counter { float: right; color: var(--dim); font-size: .72rem; font-family: var(--mono); }
 
     .row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .85rem; }
     button { font-family: var(--sans); font-weight: 600; font-size: .88rem; padding: .62rem 1.2rem; border-radius: 10px; cursor: pointer;
-      border: 1px solid var(--accent); background: var(--accent); color: #fff; transition: filter .15s, transform .15s, box-shadow .15s; }
+      border: 1px solid var(--accent); background: var(--accent); color: #fff; transition: filter .15s, box-shadow .15s; }
     button:hover { filter: brightness(1.05); box-shadow: 0 6px 16px rgba(99,102,241,.25); }
-    button.ghost { background: #fff; color: var(--accent); }
+    button.ghost { background: var(--surface); color: var(--accent); }
     button.ghost:hover { background: var(--accent-soft); box-shadow: none; }
-    button:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; filter:none; }
+    button:disabled { opacity:.55; cursor:not-allowed; box-shadow:none; filter:none; }
+    .spinner { display:inline-block; width:.85em; height:.85em; border:2px solid currentColor; border-right-color:transparent;
+      border-radius:50%; animation: spin .6s linear infinite; vertical-align:-1px; margin-right:.4rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Import source tabs */
+    .tabs { display:flex; gap:.3rem; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:.25rem; margin-bottom:.7rem; flex-wrap:wrap; }
+    .tab { flex:1; min-width:70px; background:transparent; border:none; color:var(--dim); padding:.4rem .5rem; border-radius:7px; font-size:.8rem; }
+    .tab:hover { box-shadow:none; filter:none; background:transparent; color:var(--text); }
+    .tab.active { background:var(--surface); color:var(--accent); box-shadow:var(--shadow); }
+    .tabpanel { display:none; } .tabpanel.active { display:block; }
+    input[type="file"] { font-size:.82rem; color:var(--dim); }
+    .hint { font-size:.76rem; color:var(--dim); margin-top:.4rem; }
 
     .block { margin-top: 1.25rem; }
     .block h3 { font-size: .74rem; color: var(--dim); margin-bottom: .55rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
@@ -68,7 +91,6 @@
     .chip.match { color: var(--green); background: var(--green-soft); border-color: transparent; }
     .chip.gap { color: var(--amber); background: var(--amber-soft); border-color: transparent; }
 
-    /* Editable profile */
     .profile-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .6rem; }
     .profile-head h3 { margin: 0; }
     .profile-note { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--dim); font-size: .72rem; }
@@ -82,22 +104,28 @@
     .skill-editor { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; cursor: text;
       background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: .45rem; min-height: 46px; }
     .skill-editor:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    .skill-editor input { flex: 1; min-width: 130px; border: none; background: transparent; padding: .2rem; font-size: .85rem; }
+    .skill-editor input { flex: 1; min-width: 130px; border: none; background: transparent; padding: .2rem; font-size: .85rem; color: var(--text); }
     .skill-editor input:focus { outline: none; box-shadow: none; }
     .skill-chip { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--mono); font-size: .76rem;
-      padding: .28rem .5rem; border-radius: 8px; background: #fff; border: 1px solid var(--border); color: var(--text); }
+      padding: .28rem .5rem; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--text); }
     .skill-chip button { background: none; border: none; color: var(--dim); padding: 0; font-size: .85rem; line-height: 1; }
     .skill-chip button:hover { color: var(--red); box-shadow: none; filter: none; }
+    .resume-box { margin-top:.6rem; padding:.7rem; border:1px dashed var(--border); border-radius:12px; }
 
     .score-row { display: flex; align-items: baseline; gap: .5rem; }
     .score { font-family: var(--display); font-size: 3rem; color: var(--accent); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
     .score small { font-size: 1rem; color: var(--dim); font-family: var(--sans); }
     .bar { height: 10px; background: var(--surface-2); border-radius: 6px; overflow: hidden; margin: .7rem 0 1rem; }
-    .bar > i { display:block; height:100%; background: linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius: 6px; }
+    .bar > i { display:block; height:100%; background: linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius: 6px; transition: width .4s; }
     .muted { color: var(--dim); font-size: .92rem; }
+    .result-head { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+    .copybtn { font-size:.72rem; padding:.3rem .6rem; background:var(--surface); color:var(--accent); border:1px solid var(--border); }
+    .copybtn:hover { background:var(--accent-soft); box-shadow:none; filter:none; }
+    .bullet-row { display:flex; align-items:flex-start; gap:.5rem; }
+    .bullet-row .copybtn { flex:0 0 auto; margin-top:.1rem; }
 
     ul.bullets { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
-    ul.bullets li { position: relative; padding-left: 1.3rem; font-size: .92rem; }
+    ul.bullets li { position: relative; padding-left: 1.3rem; font-size: .92rem; flex:1; }
     ul.bullets li::before { content: ""; position: absolute; left: 0; top: .5em; width: .5rem; height: .5rem;
       border-radius: 2px; background: linear-gradient(135deg,var(--accent),var(--accent-2)); }
     pre.cover { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: .9rem;
@@ -105,54 +133,103 @@
 
     .board { margin-top: 2rem; }
     .board-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .85rem; }
-    @media (max-width: 840px) { .board-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 860px) { .board-grid { grid-template-columns: 1fr 1fr; } }
     .col { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: .7rem; min-height: 90px; }
     .col h4 { font-family: var(--mono); font-size: .68rem; color: var(--dim); text-transform: uppercase; margin-bottom: .55rem; letter-spacing:.06em; }
-    .app { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: .6rem; margin-bottom: .5rem; box-shadow: var(--shadow); }
+    .app { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .6rem; margin-bottom: .5rem; box-shadow: var(--shadow); }
     .app .t { font-size: .82rem; color: var(--heading); font-weight: 600; }
     .app .s { font-family: var(--mono); font-size: .72rem; color: var(--accent); margin-top: .1rem; }
     .app .acts { display: flex; gap: .3rem; margin-top: .5rem; }
     .app select { flex: 1; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 7px;
       font-family: var(--mono); font-size: .7rem; padding: .25rem; }
-    .app .del { border: 1px solid var(--border); background: #fff; color: var(--dim); padding: 0 .45rem; border-radius: 7px; }
+    .app .del { border: 1px solid var(--border); background: var(--surface); color: var(--dim); padding: 0 .45rem; border-radius: 7px; }
     .app .del:hover { color: var(--red); border-color: var(--red); box-shadow: none; filter: none; }
     .empty { color: var(--dim); font-size: .82rem; font-style: italic; }
+    .board-empty { color: var(--dim); font-size: .85rem; margin-top:.3rem; }
     footer { text-align: center; margin-top: 3rem; color: var(--dim); font-family: var(--mono); font-size: .76rem; }
+
+    /* Toasts */
+    #toasts { position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%); display:flex; flex-direction:column; gap:.5rem; z-index:50; }
+    .toast { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+      border-radius: 10px; padding: .6rem .9rem; font-size: .85rem; box-shadow: var(--shadow); animation: fadein .2s; max-width: 90vw; }
+    .toast.err { border-left-color: var(--red); }
+    .toast.ok { border-left-color: var(--green); }
+    @keyframes fadein { from { opacity:0; transform: translateY(6px);} }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark/light theme" title="Toggle theme">◐</button>
       <div class="brand">
         <span class="mark">JL</span>
         <h1>JobLens</h1>
       </div>
-      <p class="tagline">An AI job-application assistant — add your skills, paste a job description, and see how you fit with tailored suggestions.</p>
-      <div><span class="demo-note">offline analyzer · your profile stays in your browser · nothing stored on the server</span></div>
+      <p class="tagline">An AI job-application assistant — add your skills, bring a job posting (paste, PDF, URL, or image), and see how you fit with tailored suggestions.</p>
+      <div><span class="demo-note" id="modeNote">offline analyzer · your profile stays in your browser · nothing stored on the server</span></div>
     </header>
 
     <div class="grid">
       <!-- Left: job input + editable profile -->
       <section class="card">
-        <h2>Analyze a job posting</h2>
-        <label for="jd">Paste the job description</label>
-        <textarea id="jd" placeholder="Paste a job description here…"></textarea>
+        <h2>Add a job posting</h2>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="paste" type="button">Paste</button>
+          <button class="tab" data-tab="pdf" type="button">PDF</button>
+          <button class="tab" data-tab="url" type="button">URL</button>
+          <button class="tab" data-tab="image" type="button">Image</button>
+        </div>
+
+        <div class="tabpanel active" data-panel="paste">
+          <label for="jd">Job description <span class="counter" id="jdCounter">0</span></label>
+          <textarea id="jd" placeholder="Paste a job description here…" aria-describedby="jdError"></textarea>
+          <div class="field-error" id="jdError" role="alert"></div>
+        </div>
+        <div class="tabpanel" data-panel="pdf">
+          <label for="pdfFile">Upload a job-description PDF</label>
+          <input type="file" id="pdfFile" accept="application/pdf,.pdf" />
+          <div class="row"><button id="pdfBtn" class="ghost" type="button">Extract from PDF</button></div>
+          <p class="hint">Text PDFs work best. Extracted text lands in the Paste tab for review.</p>
+        </div>
+        <div class="tabpanel" data-panel="url">
+          <label for="urlInput">Job posting URL</label>
+          <input type="url" id="urlInput" placeholder="https://…" />
+          <div class="row"><button id="urlBtn" class="ghost" type="button">Fetch from URL</button></div>
+          <p class="hint">Works on direct, public posting pages. Big job boards often block scraping — paste the text if it fails.</p>
+        </div>
+        <div class="tabpanel" data-panel="image">
+          <label for="imgFile">Screenshot of a job posting</label>
+          <input type="file" id="imgFile" accept="image/*" />
+          <div class="row"><button id="imgBtn" class="ghost" type="button">Extract from image</button></div>
+          <p class="hint">Image import uses AI vision (available in AI mode).</p>
+        </div>
+
         <div class="row">
-          <button id="analyzeBtn">Analyze</button>
-          <button id="saveBtn" class="ghost">Analyze &amp; save to board</button>
-          <button id="sampleBtn" class="ghost">Load sample JD</button>
+          <button id="analyzeBtn" type="button">Analyze</button>
+          <button id="saveBtn" class="ghost" type="button">Analyze &amp; save to board</button>
+          <button id="sampleBtn" class="ghost" type="button">Load sample JD</button>
         </div>
 
         <div class="block">
           <div class="profile-head">
             <h3>Your profile <span class="profile-note">— stays in your browser</span></h3>
-            <button id="resetProfileBtn" class="linkbtn" type="button">Reset to sample</button>
+            <span>
+              <button id="resumeToggle" class="linkbtn" type="button">Autofill from résumé</button>
+              <button id="resetProfileBtn" class="linkbtn" type="button">Reset to sample</button>
+            </span>
+          </div>
+
+          <div class="resume-box" id="resumeBox" style="display:none">
+            <label for="resumeText">Paste your résumé text <span class="dimlabel">(skills extracted; nothing stored)</span></label>
+            <textarea id="resumeText" placeholder="Paste your résumé…"></textarea>
+            <div class="row"><button id="resumeExtractBtn" class="ghost" type="button">Extract skills</button></div>
           </div>
 
           <div class="profile-fields">
             <div class="field">
               <label for="pfHeadline">Headline</label>
-              <input id="pfHeadline" type="text" placeholder="e.g. Senior Backend Engineer" />
+              <input id="pfHeadline" type="text" placeholder="e.g. Senior Software Engineer" />
             </div>
             <div class="field field--sm">
               <label for="pfYears">Years of exp.</label>
@@ -163,7 +240,8 @@
           <div class="field">
             <label for="pfSkillInput">Skills <span class="dimlabel">(press Enter or comma to add)</span></label>
             <div class="skill-editor" id="skillEditor">
-              <input id="pfSkillInput" type="text" placeholder="Add a skill…" autocomplete="off" />
+              <input id="pfSkillInput" type="text" placeholder="Add a skill…" autocomplete="off" list="skillList" />
+              <datalist id="skillList"></datalist>
             </div>
           </div>
 
@@ -177,7 +255,7 @@
       <!-- Right: results -->
       <section class="card">
         <h2>Fit analysis</h2>
-        <div id="result"><p class="empty">Add your skills and run an analysis to see your match, gaps, and tailored suggestions.</p></div>
+        <div id="result" aria-live="polite"><p class="empty">Add your skills and run an analysis to see your match, gaps, and tailored suggestions.</p></div>
       </section>
     </div>
 
@@ -185,22 +263,26 @@
     <section class="board">
       <div class="card">
         <h2>Application board</h2>
+        <div class="board-empty" id="boardEmpty" style="display:none">Nothing saved yet — analyze a posting and click “Analyze &amp; save to board”.</div>
         <div class="board-grid" id="board"></div>
       </div>
     </section>
 
     <footer>
       JobLens · Spring Boot + Spring AI ·
-      <a href="https://github.com/dev-codewitheli/joblens" target="_blank" rel="noopener">github.com/dev-codewitheli/joblens</a>
+      <a href="/swagger-ui.html" target="_blank" rel="noopener">API docs</a> ·
+      <a href="https://github.com/dev-codewitheli/joblens" target="_blank" rel="noopener">source</a>
     </footer>
   </div>
+  <div id="toasts"></div>
 
   <script>
     const STATUSES = ["SAVED", "APPLIED", "INTERVIEWING", "OFFER", "REJECTED"];
     const PROFILE_KEY = "joblens_profile_v1";
+    const THEME_KEY = "joblens_theme";
+    const CLIENT_KEY = "joblens_client_id";
     const $ = (s) => document.querySelector(s);
 
-    // Visitor's profile — kept only in this browser, sent with each request.
     let profile = { headline: "", yearsOfExperience: 0, skills: [], experienceSummary: "" };
 
     const SAMPLE = `Senior Backend Engineer
@@ -215,115 +297,151 @@ Requirements:
 - REST API design
 Nice to have: AWS, CI/CD, hexagonal architecture.`;
 
-    async function api(path, opts) {
-      const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...opts });
-      if (!res.ok && res.status !== 404) throw new Error("HTTP " + res.status);
-      return res.status === 204 ? null : res.json();
+    /* ---- helpers ---- */
+    function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+    function lsSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+    function esc(s){ return (s||"").replace(/[&<>]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c])); }
+
+    function clientId(){
+      let id = lsGet(CLIENT_KEY);
+      if (!id) { id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(16).slice(2)); lsSet(CLIENT_KEY, id); }
+      return id;
     }
 
-    function esc(s) { return (s || "").replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
-
-    /* ---- Profile state (localStorage-backed) ---- */
-    function saveProfileLocal() {
-      try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch (e) { /* ignore */ }
+    async function api(path, opts={}) {
+      const headers = Object.assign({ "X-Client-Id": clientId() }, opts.headers || {});
+      if (opts.body && !(opts.body instanceof FormData) && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+      const res = await fetch(path, { ...opts, headers });
+      if (res.status === 204) return null;
+      const txt = await res.text();
+      let data = null; try { data = txt ? JSON.parse(txt) : null; } catch(e){}
+      if (!res.ok && res.status !== 404) throw new Error((data && data.error) || ("Request failed (" + res.status + ")"));
+      return data;
     }
 
-    function renderSkills() {
-      const editor = $("#skillEditor");
-      const input = $("#pfSkillInput");
+    function toast(msg, kind) {
+      const el = document.createElement("div");
+      el.className = "toast" + (kind ? " " + kind : "");
+      el.textContent = msg;
+      $("#toasts").appendChild(el);
+      setTimeout(() => { el.style.opacity = "0"; setTimeout(() => el.remove(), 250); }, 3000);
+    }
+
+    async function copy(text, label) {
+      try { await navigator.clipboard.writeText(text); toast((label || "Copied") + " ✓", "ok"); }
+      catch(e){ toast("Couldn't copy — select and copy manually.", "err"); }
+    }
+    window.__copy = copy;
+
+    /* ---- theme ---- */
+    function applyTheme(t){ document.documentElement.setAttribute("data-theme", t); $("#themeToggle").textContent = t === "dark" ? "☀" : "☾"; }
+    function initTheme(){ applyTheme(lsGet(THEME_KEY) || "dark"); }  // dark by default
+    $("#themeToggle").onclick = () => {
+      const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      lsSet(THEME_KEY, next); applyTheme(next);
+    };
+
+    /* ---- tabs ---- */
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tabpanel").forEach(p => p.classList.remove("active"));
+        tab.classList.add("active");
+        $(`.tabpanel[data-panel="${tab.dataset.tab}"]`).classList.add("active");
+      };
+    });
+    function showPasteTab(){ document.querySelector('.tab[data-tab="paste"]').click(); }
+
+    /* ---- profile (localStorage-backed) ---- */
+    function saveProfileLocal(){ lsSet(PROFILE_KEY, JSON.stringify(profile)); }
+
+    function renderSkills(){
+      const editor = $("#skillEditor"), input = $("#pfSkillInput");
       [...editor.querySelectorAll(".skill-chip")].forEach(c => c.remove());
       profile.skills.forEach((skill, i) => {
         const chip = document.createElement("span");
         chip.className = "skill-chip";
         chip.innerHTML = `${esc(skill)} <button type="button" aria-label="Remove ${esc(skill)}">&times;</button>`;
-        chip.querySelector("button").onclick = () => { profile.skills.splice(i, 1); saveProfileLocal(); renderSkills(); };
+        chip.querySelector("button").onclick = () => { profile.skills.splice(i,1); saveProfileLocal(); renderSkills(); };
         editor.insertBefore(chip, input);
       });
     }
-
-    function fillProfileForm() {
+    function fillProfileForm(){
       $("#pfHeadline").value = profile.headline || "";
       $("#pfYears").value = profile.yearsOfExperience || 0;
       $("#pfSummary").value = profile.experienceSummary || "";
       renderSkills();
     }
-
-    function syncProfileFromForm() {
+    function syncProfileFromForm(){
       profile.headline = $("#pfHeadline").value.trim();
-      profile.yearsOfExperience = parseInt($("#pfYears").value, 10) || 0;
+      profile.yearsOfExperience = parseInt($("#pfYears").value,10) || 0;
       profile.experienceSummary = $("#pfSummary").value.trim();
       saveProfileLocal();
     }
-
-    function addSkill(raw) {
-      const v = (raw || "").replace(/,/g, "").trim();
+    function addSkill(raw){
+      const v = (raw||"").replace(/,/g,"").trim();
       if (!v) return;
-      if (!profile.skills.some(s => s.toLowerCase() === v.toLowerCase())) {
-        profile.skills.push(v);
-        saveProfileLocal();
-        renderSkills();
-      }
+      if (!profile.skills.some(s => s.toLowerCase() === v.toLowerCase())) { profile.skills.push(v); saveProfileLocal(); renderSkills(); }
     }
-
-    function profilePayload() {
+    function profilePayload(){
       syncProfileFromForm();
-      return {
-        headline: profile.headline,
-        yearsOfExperience: profile.yearsOfExperience,
-        skills: profile.skills,
-        experienceSummary: profile.experienceSummary,
-        projectHighlights: []
-      };
+      return { headline: profile.headline, yearsOfExperience: profile.yearsOfExperience,
+               skills: profile.skills, experienceSummary: profile.experienceSummary, projectHighlights: [] };
     }
-
-    async function sampleProfile() {
+    async function sampleProfile(){
       const p = await api("/api/profile");
-      return {
-        headline: p.headline || "",
-        yearsOfExperience: p.yearsOfExperience || 0,
-        skills: Array.isArray(p.skills) ? p.skills.slice() : [],
-        experienceSummary: p.experienceSummary || ""
-      };
+      return { headline: p.headline||"", yearsOfExperience: p.yearsOfExperience||0,
+               skills: Array.isArray(p.skills)?p.skills.slice():[], experienceSummary: p.experienceSummary||"" };
     }
-
-    async function loadProfile() {
-      let stored = null;
-      try { stored = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null"); } catch (e) { /* ignore */ }
+    async function loadProfile(){
+      let stored=null; try { stored = JSON.parse(lsGet(PROFILE_KEY)||"null"); } catch(e){}
       if (stored && Array.isArray(stored.skills)) {
-        profile = {
-          headline: stored.headline || "",
-          yearsOfExperience: stored.yearsOfExperience || 0,
-          skills: stored.skills,
-          experienceSummary: stored.experienceSummary || ""
-        };
-      } else {
-        try { profile = await sampleProfile(); } catch (e) { /* keep empty */ }
-      }
+        profile = { headline: stored.headline||"", yearsOfExperience: stored.yearsOfExperience||0,
+                    skills: stored.skills, experienceSummary: stored.experienceSummary||"" };
+      } else { try { profile = await sampleProfile(); } catch(e){} }
       fillProfileForm();
     }
+    async function resetProfile(){ try { profile = await sampleProfile(); saveProfileLocal(); fillProfileForm(); toast("Profile reset to sample","ok"); } catch(e){ toast(e.message,"err"); } }
 
-    async function resetProfile() {
-      try { profile = await sampleProfile(); saveProfileLocal(); fillProfileForm(); } catch (e) { /* ignore */ }
+    /* ---- validation ---- */
+    function updateCounter(){ $("#jdCounter").textContent = $("#jd").value.length; }
+    function clearJdError(){ $("#jdError").textContent = ""; }
+    function jobDescriptionOrWarn(){
+      const jd = $("#jd").value.trim();
+      if (!jd) { $("#jdError").textContent = "Paste a job description first."; showPasteTab(); $("#jd").focus(); return null; }
+      clearJdError();
+      if (profile.skills.length === 0) toast("Tip: add your skills for a meaningful match.", "");
+      return jd;
     }
 
-    /* ---- Analysis + board rendering ---- */
-    function renderAnalysis(a) {
-      const chips = (arr, cls) => arr.length
-        ? arr.map(x => `<span class="chip ${cls}">${esc(x)}</span>`).join("")
-        : `<span class="empty">none</span>`;
+    /* ---- analysis + board ---- */
+    function renderAnalysis(a){
+      const chips = (arr, cls) => arr.length ? arr.map(x => `<span class="chip ${cls}">${esc(x)}</span>`).join("") : `<span class="empty">none</span>`;
+      const bullets = a.suggestedBullets.map(b =>
+        `<li class="bullet-row"><span>${esc(b)}</span><button class="copybtn" type="button" onclick="__copy(${JSON.stringify(b).replace(/"/g,'&quot;')})">copy</button></li>`).join("");
       $("#result").innerHTML = `
-        <div class="score-row"><span class="score">${a.matchScore}</span><small>/100 match</small></div>
+        <div class="result-head">
+          <div class="score-row"><span class="score">${a.matchScore}</span><small>/100 match</small></div>
+          <button class="copybtn" type="button" id="copyAll">Copy all</button>
+        </div>
         <div class="bar"><i style="width:${a.matchScore}%"></i></div>
         <p class="muted">${esc(a.fitSummary)}</p>
-        <div class="block"><h3>Matched</h3><div class="chips">${chips(a.matched, "match")}</div></div>
-        <div class="block"><h3>Gaps</h3><div class="chips">${chips(a.gaps, "gap")}</div></div>
-        <div class="block"><h3>Suggested resume bullets</h3>
-          <ul class="bullets">${a.suggestedBullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul></div>
-        <div class="block"><h3>Cover-letter draft</h3><pre class="cover">${esc(a.coverLetterDraft)}</pre></div>`;
+        <div class="block"><h3>Matched</h3><div class="chips">${chips(a.matched,"match")}</div></div>
+        <div class="block"><h3>Gaps</h3><div class="chips">${chips(a.gaps,"gap")}</div></div>
+        <div class="block"><h3>Suggested resume bullets</h3><ul class="bullets">${bullets}</ul></div>
+        <div class="block"><div class="result-head"><h3>Cover-letter draft</h3>
+          <button class="copybtn" type="button" id="copyCover">copy</button></div>
+          <pre class="cover" id="coverText">${esc(a.coverLetterDraft)}</pre></div>`;
+      $("#copyCover").onclick = () => copy(a.coverLetterDraft, "Cover letter copied");
+      $("#copyAll").onclick = () => copy(
+        `Match: ${a.matchScore}/100\n${a.fitSummary}\n\nMatched: ${a.matched.join(", ")}\nGaps: ${a.gaps.join(", ")}\n\nBullets:\n- ${a.suggestedBullets.join("\n- ")}\n\nCover letter:\n${a.coverLetterDraft}`,
+        "Full analysis copied");
     }
 
-    async function renderBoard() {
-      const apps = await api("/api/applications");
+    async function renderBoard(){
+      let apps = [];
+      try { apps = await api("/api/applications") || []; } catch(e){}
+      $("#boardEmpty").style.display = apps.length ? "none" : "block";
       const board = $("#board");
       board.innerHTML = STATUSES.map(st => {
         const inCol = apps.filter(a => a.status === st);
@@ -333,7 +451,7 @@ Nice to have: AWS, CI/CD, hexagonal architecture.`;
             <div class="s">${a.analysis.matchScore}% match</div>
             <div class="acts">
               <select onchange="moveApp('${a.id}', this.value)">
-                ${STATUSES.map(s => `<option value="${s}" ${s === st ? "selected" : ""}>${s}</option>`).join("")}
+                ${STATUSES.map(s => `<option value="${s}" ${s===st?"selected":""}>${s}</option>`).join("")}
               </select>
               <button class="del" title="Delete" onclick="deleteApp('${a.id}')">&times;</button>
             </div>
@@ -341,42 +459,99 @@ Nice to have: AWS, CI/CD, hexagonal architecture.`;
         return `<div class="col"><h4>${st}</h4>${cards}</div>`;
       }).join("");
     }
+    window.moveApp = async (id, status) => { try { await api(`/api/applications/${id}/status`, { method:"PATCH", body: JSON.stringify({ status }) }); renderBoard(); } catch(e){ toast(e.message,"err"); } };
+    window.deleteApp = async (id) => { try { await api(`/api/applications/${id}`, { method:"DELETE" }); renderBoard(); toast("Removed","ok"); } catch(e){ toast(e.message,"err"); } };
 
-    window.moveApp = async (id, status) => { await api(`/api/applications/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }); renderBoard(); };
-    window.deleteApp = async (id) => { await api(`/api/applications/${id}`, { method: "DELETE" }); renderBoard(); };
+    /* ---- actions ---- */
+    function setLoading(btn, on, label){ btn.disabled = on; btn.innerHTML = on ? `<span class="spinner"></span>${label}` : label; }
 
-    /* ---- Wiring ---- */
+    async function doAnalyze(){
+      const jd = jobDescriptionOrWarn(); if (!jd) return;
+      const btn = $("#analyzeBtn"); setLoading(btn, true, "Analyzing…");
+      $("#result").setAttribute("aria-busy","true");
+      try { renderAnalysis(await api("/api/analyze", { method:"POST", body: JSON.stringify({ jobDescription: jd, profile: profilePayload() }) })); }
+      catch(e){ $("#result").innerHTML = `<p class="empty">${esc(e.message)}</p>`; toast(e.message,"err"); }
+      finally { setLoading(btn, false, "Analyze"); $("#result").removeAttribute("aria-busy"); }
+    }
+    async function doSave(){
+      const jd = jobDescriptionOrWarn(); if (!jd) return;
+      const btn = $("#saveBtn"); setLoading(btn, true, "Saving…");
+      try { const card = await api("/api/applications", { method:"POST", body: JSON.stringify({ jobDescription: jd, profile: profilePayload() }) });
+            renderAnalysis(card.analysis); renderBoard(); toast("Saved to board","ok"); }
+      catch(e){ toast(e.message,"err"); }
+      finally { setLoading(btn, false, "Analyze & save to board"); }
+    }
+
+    async function importVia(btn, label, run){
+      setLoading(btn, true, "Working…");
+      try { const { jobDescription } = await run(); $("#jd").value = jobDescription || ""; updateCounter(); clearJdError(); showPasteTab(); toast("Imported — review and analyze","ok"); }
+      catch(e){ toast(e.message,"err"); }
+      finally { setLoading(btn, false, label); }
+    }
+
+    /* ---- wiring ---- */
     const skillInput = $("#pfSkillInput");
     skillInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill(skillInput.value); skillInput.value = ""; }
-      else if (e.key === "Backspace" && skillInput.value === "" && profile.skills.length) {
-        profile.skills.pop(); saveProfileLocal(); renderSkills();
-      }
+      else if (e.key === "Backspace" && skillInput.value === "" && profile.skills.length) { profile.skills.pop(); saveProfileLocal(); renderSkills(); }
+    });
+    let skillTimer;
+    skillInput.addEventListener("input", () => {
+      clearTimeout(skillTimer);
+      const q = skillInput.value.trim();
+      skillTimer = setTimeout(async () => {
+        try { const sugg = await api("/api/skills?q=" + encodeURIComponent(q)); $("#skillList").innerHTML = (sugg||[]).map(s => `<option value="${esc(s)}">`).join(""); } catch(e){}
+      }, 150);
     });
     skillInput.addEventListener("blur", () => { if (skillInput.value.trim()) { addSkill(skillInput.value); skillInput.value = ""; } });
     $("#skillEditor").addEventListener("click", () => skillInput.focus());
-    ["#pfHeadline", "#pfYears", "#pfSummary"].forEach(sel => $(sel).addEventListener("change", syncProfileFromForm));
+    ["#pfHeadline","#pfYears","#pfSummary"].forEach(sel => $(sel).addEventListener("change", syncProfileFromForm));
     $("#resetProfileBtn").onclick = resetProfile;
-
-    $("#analyzeBtn").onclick = async () => {
-      const jd = $("#jd").value.trim();
-      if (!jd) return;
-      $("#analyzeBtn").disabled = true;
-      try { renderAnalysis(await api("/api/analyze", { method: "POST", body: JSON.stringify({ jobDescription: jd, profile: profilePayload() }) })); }
-      catch (e) { $("#result").innerHTML = `<p class="empty">Analysis failed: ${esc(e.message)}</p>`; }
-      finally { $("#analyzeBtn").disabled = false; }
+    $("#resumeToggle").onclick = () => { const b = $("#resumeBox"); b.style.display = b.style.display === "none" ? "block" : "none"; };
+    $("#resumeExtractBtn").onclick = async () => {
+      const text = $("#resumeText").value.trim();
+      if (!text) { toast("Paste your résumé text first.","err"); return; }
+      const btn = $("#resumeExtractBtn"); setLoading(btn, true, "Extracting…");
+      try {
+        const p = await api("/api/profile/extract", { method:"POST", body: JSON.stringify({ resumeText: text }) });
+        let added = 0;
+        (p.skills||[]).forEach(s => { if (!profile.skills.some(x => x.toLowerCase() === s.toLowerCase())) { profile.skills.push(s); added++; } });
+        if (p.headline) profile.headline = p.headline;
+        if (p.yearsOfExperience) profile.yearsOfExperience = p.yearsOfExperience;
+        if (p.experienceSummary) profile.experienceSummary = p.experienceSummary;
+        saveProfileLocal(); fillProfileForm();
+        toast(added ? `Added ${added} skill${added>1?"s":""} from your résumé` : "No new skills found", "ok");
+      } catch(e){ toast(e.message,"err"); }
+      finally { setLoading(btn, false, "Extract skills"); }
     };
 
-    $("#saveBtn").onclick = async () => {
-      const jd = $("#jd").value.trim();
-      if (!jd) return;
-      const card = await api("/api/applications", { method: "POST", body: JSON.stringify({ jobDescription: jd, profile: profilePayload() }) });
-      renderAnalysis(card.analysis);
-      renderBoard();
+    $("#analyzeBtn").onclick = doAnalyze;
+    $("#saveBtn").onclick = doSave;
+    $("#sampleBtn").onclick = () => { $("#jd").value = SAMPLE; updateCounter(); clearJdError(); };
+    $("#jd").addEventListener("input", () => { updateCounter(); clearJdError(); });
+    $("#jd").addEventListener("keydown", (e) => { if ((e.ctrlKey||e.metaKey) && e.key === "Enter") { e.preventDefault(); doAnalyze(); } });
+
+    $("#pdfBtn").onclick = () => {
+      const f = $("#pdfFile").files[0];
+      if (!f) { toast("Choose a PDF first.","err"); return; }
+      const fd = new FormData(); fd.append("file", f);
+      importVia($("#pdfBtn"), "Extract from PDF", () => api("/api/import/pdf", { method:"POST", body: fd }));
+    };
+    $("#urlBtn").onclick = () => {
+      const u = $("#urlInput").value.trim();
+      if (!u) { toast("Enter a URL.","err"); return; }
+      importVia($("#urlBtn"), "Fetch from URL", () => api("/api/import/url", { method:"POST", body: JSON.stringify({ url: u }) }));
+    };
+    $("#imgBtn").onclick = () => {
+      const f = $("#imgFile").files[0];
+      if (!f) { toast("Choose an image first.","err"); return; }
+      const fd = new FormData(); fd.append("file", f);
+      importVia($("#imgBtn"), "Extract from image", () => api("/api/import/image", { method:"POST", body: fd }));
     };
 
-    $("#sampleBtn").onclick = () => { $("#jd").value = SAMPLE; };
-
+    /* ---- init ---- */
+    initTheme();
+    updateCounter();
     loadProfile();
     renderBoard();
   </script>

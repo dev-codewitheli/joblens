@@ -3,9 +3,19 @@ spring:
     name: joblens
   # Default to the zero-setup "demo" profile: a deterministic, offline analyzer
   # and in-memory storage, so `./gradlew bootRun` works with no API key or DB.
-  # Switch to real AI with:  --spring.profiles.active=ai  (and set OPENAI_API_KEY)
+  # Switch to real AI with:   --spring.profiles.active=ai     (set OPENAI_API_KEY)
+  # Switch to Postgres with:  --spring.profiles.active=postgres (see application-postgres.yml)
   profiles:
     default: demo
+  # No database by default. JPA/DataSource/Liquibase auto-config is excluded here so
+  # the app boots with no DB in demo/ai modes; the 'postgres' profile clears this list.
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
   ai:
     openai:
       # Placeholder so autoconfiguration loads in demo mode (never called there).
@@ -19,7 +29,28 @@ spring:
           model: ${JOBLENS_AI_MODEL:gpt-4o-mini}
           temperature: 0.3
 
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
+
 server:
   # Bind the platform-provided port in the cloud (Render/Railway set $PORT),
   # falling back to 8080 for local runs.
   port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+# Lightweight rate limiting for public endpoints (hand-rolled token bucket).
+joblens:
+  ratelimit:
+    enabled: true
+    capacity: 30          # burst
+    refill-per-minute: 30 # sustained requests/min per client
