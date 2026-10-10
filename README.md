@@ -16,7 +16,8 @@ a real LLM by flipping one profile, and persists to **PostgreSQL** under another
 ## Highlights
 
 - **Bring a posting four ways** — paste, **PDF upload** (Apache PDFBox), **URL import**
-  (jsoup, SSRF-hardened), or **image/screenshot** (AI vision in AI mode).
+  (jsoup, SSRF-hardened), or **image/screenshot** — paste, drag-drop, or choose a file,
+  read with **offline OCR (Tesseract)** or an AI vision model in AI mode.
 - **Bring your own skills** — an editable profile (headline, years, skills with
   autocomplete) that lives only in the browser and travels with each request;
   **autofill from a pasted résumé** too. Nothing about a visitor is stored server-side.
@@ -114,7 +115,7 @@ Interactive docs at **`/swagger-ui.html`**. All board calls are scoped by an
 | `GET /api/skills?q=` | Skill autocomplete |
 | `POST /api/import/pdf` | Extract JD text from a PDF (multipart) |
 | `POST /api/import/url` | Extract JD text from a public URL |
-| `POST /api/import/image` | Extract JD text from a screenshot (AI mode) |
+| `POST /api/import/image` | Extract JD text from a screenshot (offline OCR; AI vision in AI mode) |
 | `GET /actuator/health` | Health check |
 
 ```bash
@@ -129,7 +130,7 @@ curl -s -X POST http://localhost:8080/api/analyze \
 
 Java 21 · Spring Boot 3.4 · Spring AI 1.0 · Spring Web · Spring Data JPA · Liquibase ·
 PostgreSQL · Bean Validation · Actuator · springdoc-openapi · Apache PDFBox · jsoup ·
-JUnit 5 · Testcontainers · Gradle · Docker · GitHub Actions.
+Tesseract/Tess4J (OCR) · JUnit 5 · Testcontainers · Gradle · Docker · GitHub Actions.
 
 ## Roadmap
 

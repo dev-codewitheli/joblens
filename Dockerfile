@@ -15,6 +15,15 @@ RUN ./gradlew --no-daemon clean bootJar
 # ---- Runtime stage ----
 FROM eclipse-temurin:21-jre
 WORKDIR /app
+
+# Native Tesseract for offline OCR (image import). ocrmypdf isn't needed — just the
+# engine + English data. A stable libtesseract.so symlink helps JNA load it.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng \
+    && ln -sf "$(ls /usr/lib/*/libtesseract.so.* | head -n1)" /usr/lib/libtesseract.so \
+    && rm -rf /var/lib/apt/lists/*
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Default to the zero-setup demo profile; override with SPRING_PROFILES_ACTIVE=ai
