@@ -82,6 +82,12 @@
     .tabpanel { display:none; } .tabpanel.active { display:block; }
     input[type="file"] { font-size:.82rem; color:var(--dim); }
     .hint { font-size:.76rem; color:var(--dim); margin-top:.4rem; }
+    .dropzone { border: 1.5px dashed var(--border); border-radius: 12px; padding: 1.1rem; text-align: center;
+      color: var(--dim); font-size: .82rem; cursor: pointer; transition: border-color .15s, background .15s; }
+    .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+    .dropzone:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .dropzone img { max-width: 100%; max-height: 180px; border-radius: 8px; margin: .5rem auto 0; display: none; }
+    .dropzone img.show { display: block; }
 
     .block { margin-top: 1.25rem; }
     .block h3 { font-size: .74rem; color: var(--dim); margin-bottom: .55rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
@@ -199,10 +205,14 @@
           <p class="hint">Works on direct, public posting pages. Big job boards often block scraping — paste the text if it fails.</p>
         </div>
         <div class="tabpanel" data-panel="image">
-          <label for="imgFile">Screenshot of a job posting</label>
-          <input type="file" id="imgFile" accept="image/*" />
+          <label>Screenshot of a job posting</label>
+          <div class="dropzone" id="imgDrop" tabindex="0" role="button" aria-label="Paste, drop, or choose a screenshot">
+            <span id="imgDropText">Paste a screenshot (Ctrl/Cmd+V), drag &amp; drop, or click to choose a file</span>
+            <img id="imgPreview" alt="Screenshot preview" />
+          </div>
+          <input type="file" id="imgFile" accept="image/*" style="display:none" />
           <div class="row"><button id="imgBtn" class="ghost" type="button">Extract from image</button></div>
-          <p class="hint">Image import uses AI vision (available in AI mode).</p>
+          <p class="hint">Paste works anywhere on the page. Image import uses AI vision (available in AI mode).</p>
         </div>
 
         <div class="row">
@@ -284,6 +294,7 @@
     const $ = (s) => document.querySelector(s);
 
     let profile = { headline: "", yearsOfExperience: 0, skills: [], experienceSummary: "" };
+    let pendingImage = null; // screenshot chosen/pasted/dropped, awaiting "Extract"
 
     const SAMPLE = `Senior Backend Engineer
 
@@ -542,10 +553,41 @@ Nice to have: AWS, CI/CD, hexagonal architecture.`;
       if (!u) { toast("Enter a URL.","err"); return; }
       importVia($("#urlBtn"), "Fetch from URL", () => api("/api/import/url", { method:"POST", body: JSON.stringify({ url: u }) }));
     };
+    // ---- image: choose / drop / paste a screenshot ----
+    function setPendingImage(blob, name) {
+      pendingImage = blob;
+      const img = $("#imgPreview");
+      img.src = URL.createObjectURL(blob);
+      img.classList.add("show");
+      $("#imgDropText").textContent = (name || "Screenshot") + " ready — click “Extract from image”";
+    }
+    $("#imgFile").addEventListener("change", () => { const f = $("#imgFile").files[0]; if (f) setPendingImage(f, f.name); });
+    $("#imgDrop").addEventListener("click", () => $("#imgFile").click());
+    $("#imgDrop").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("#imgFile").click(); } });
+    $("#imgDrop").addEventListener("dragover", (e) => { e.preventDefault(); $("#imgDrop").classList.add("drag"); });
+    $("#imgDrop").addEventListener("dragleave", () => $("#imgDrop").classList.remove("drag"));
+    $("#imgDrop").addEventListener("drop", (e) => {
+      e.preventDefault(); $("#imgDrop").classList.remove("drag");
+      const f = [...((e.dataTransfer && e.dataTransfer.files) || [])].find(x => x.type.startsWith("image/"));
+      if (f) setPendingImage(f, f.name); else toast("Drop an image file.", "err");
+    });
+    // Paste a screenshot from anywhere on the page
+    document.addEventListener("paste", (e) => {
+      const items = (e.clipboardData && e.clipboardData.items) || [];
+      const item = [...items].find(i => i.type && i.type.startsWith("image/"));
+      if (!item) return; // let normal text paste proceed
+      const blob = item.getAsFile();
+      if (!blob) return;
+      e.preventDefault();
+      document.querySelector('.tab[data-tab="image"]').click();
+      setPendingImage(blob, "Pasted screenshot");
+      toast("Screenshot pasted — click “Extract from image”", "ok");
+    });
     $("#imgBtn").onclick = () => {
-      const f = $("#imgFile").files[0];
-      if (!f) { toast("Choose an image first.","err"); return; }
-      const fd = new FormData(); fd.append("file", f);
+      const blob = pendingImage || $("#imgFile").files[0];
+      if (!blob) { toast("Paste, drop, or choose a screenshot first.", "err"); return; }
+      const fd = new FormData();
+      fd.append("file", blob, blob.name || "screenshot.png");
       importVia($("#imgBtn"), "Extract from image", () => api("/api/import/image", { method:"POST", body: fd }));
     };
 
