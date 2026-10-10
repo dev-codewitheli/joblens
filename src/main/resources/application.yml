@@ -47,6 +47,15 @@ management:
   endpoint:
     health:
       show-details: never
+      # Expose /actuator/health/liveness and /readiness (used by the Render health
+      # check and the external keep-alive ping) so they don't flap on secondary checks.
+      probes:
+        enabled: true
+  health:
+    # Disk-space health can report DOWN on a small/full free-tier container and would
+    # otherwise make the whole /actuator/health aggregate 503. It's not useful here.
+    diskspace:
+      enabled: false
 
 # Lightweight rate limiting for public endpoints (hand-rolled token bucket).
 joblens:

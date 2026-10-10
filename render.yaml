@@ -7,7 +7,9 @@ services:
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /actuator/health
+    # Liveness probe: 200 whenever the app process is up, so Render doesn't cycle the
+    # service over a secondary health check (full aggregate is at /actuator/health).
+    healthCheckPath: /actuator/health/liveness
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: demo
